@@ -19,10 +19,12 @@ public class ReminderServiceImpl implements ReminderService{
     private ModelMapper modelMapper;
     private ReminderRepository reminderRepository;
     private static final Logger log = LoggerFactory.getLogger(ReminderServiceImpl.class);
+    private EmailService emailService;
 
-    public ReminderServiceImpl(ModelMapper modelMapper, ReminderRepository reminderRepository){
+    public ReminderServiceImpl(ModelMapper modelMapper, ReminderRepository reminderRepository, EmailService emailService){
         this.reminderRepository = reminderRepository;
         this.modelMapper = modelMapper;
+        this.emailService = emailService;
     }
 
     @Override
@@ -31,6 +33,11 @@ public class ReminderServiceImpl implements ReminderService{
         Reminder reminder = modelMapper.map(reminderRequestDto, Reminder.class);
         reminder.setStatus("PENDING");
         Reminder createReminder = reminderRepository.save(reminder);
+        emailService.sendEmail(
+                createReminder.getEmail(),
+                "Reminder Created",
+                "Your reminder is created successfully"
+        );
         log.info("Reminder saved successfully with email: {}", reminderRequestDto.getEmail());
         return modelMapper.map(createReminder, ReminderResponseDto.class);
     }
