@@ -33,11 +33,6 @@ public class ReminderServiceImpl implements ReminderService{
         Reminder reminder = modelMapper.map(reminderRequestDto, Reminder.class);
         reminder.setStatus("PENDING");
         Reminder createReminder = reminderRepository.save(reminder);
-        emailService.sendEmail(
-                createReminder.getEmail(),
-                "Reminder Created",
-                "Your reminder is created successfully"
-        );
         log.info("Reminder saved successfully with email: {}", reminderRequestDto.getEmail());
         return modelMapper.map(createReminder, ReminderResponseDto.class);
     }
